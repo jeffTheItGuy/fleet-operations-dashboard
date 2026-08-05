@@ -31,7 +31,6 @@ const tooltipStyle = {
   color: '#f2f1ec',
   padding: '10px 12px',
 }
-
 const tooltipLabelStyle = { color: '#f2f1ec', fontWeight: 600, marginBottom: '4px' }
 const axisTick = { fontSize: 12, fontFamily: "'IBM Plex Sans', sans-serif", fill: '#6b7770' }
 
@@ -85,38 +84,72 @@ export function VehicleTypeChart({ data }) {
   const total = data.reduce((sum, d) => sum + (d.value || 0), 0)
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
-      <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          innerRadius={64}
-          outerRadius={92}
-          paddingAngle={3}
-          dataKey="value"
-          labelLine={false}
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
-          ))}
-        </Pie>
-        {/* Center readout — total fleet count, styled like a gauge */}
-        <text x="50%" y="47%" textAnchor="middle" dominantBaseline="middle" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '1.6rem', fontWeight: 600, fill: '#14232e' }}>
-          {total}
-        </text>
-        <text x="50%" y="58%" textAnchor="middle" dominantBaseline="middle" style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.72rem', fill: '#6b7770', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Total Fleet
-        </text>
-        <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipLabelStyle} />
-        <Legend
-          layout="vertical"
-          verticalAlign="middle"
-          align="right"
-          wrapperStyle={{ fontSize: '0.78rem', fontFamily: "'IBM Plex Sans', sans-serif" }}
-        />
-      </PieChart>
-    </ResponsiveContainer>
+    <div>
+      {/* Donut — centered now that nothing shares the chart area */}
+      <div style={{ height: 240 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={66}
+              outerRadius={94}
+              paddingAngle={3}
+              dataKey="value"
+              labelLine={false}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
+              ))}
+            </Pie>
+
+            {/* Center readout — total fleet count, styled like a gauge */}
+            <text x="50%" y="46%" textAnchor="middle" dominantBaseline="middle" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '1.6rem', fontWeight: 600, fill: '#14232e' }}>
+              {total}
+            </text>
+            <text x="50%" y="57%" textAnchor="middle" dominantBaseline="middle" style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.72rem', fill: '#6b7770', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Total Fleet
+            </text>
+
+            <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipLabelStyle} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Custom legend in normal document flow — the built-in Recharts
+          legend is absolutely positioned, so it overlapped the donut and
+          clipped at card width. This grid wraps responsively instead. */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+        gap: '8px 20px',
+        marginTop: '16px',
+      }}>
+        {data.map((entry, index) => (
+          <div key={entry.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
+            <span style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '2px',
+              background: COLORS[index % COLORS.length],
+              flexShrink: 0,
+            }} />
+            <span style={{ color: 'var(--cmed-text)' }}>{entry.name}</span>
+            <span style={{
+              marginLeft: 'auto',
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontWeight: 600,
+              fontSize: '0.78rem',
+              color: 'var(--cmed-ink)',
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 

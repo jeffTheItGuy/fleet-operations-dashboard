@@ -160,8 +160,7 @@ function Sidebar({ className = '', onClose = () => {} }) {
           <div className="user-info">
             <div className="user-avatar">GT</div>
             <div className="user-details">
-              <span className="user-name">Graduate Trainee</span>
-              <span className="user-role">ICT Department</span>
+              <span className="user-name">Admin</span>
             </div>
           </div>
         </div>
