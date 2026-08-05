@@ -1,0 +1,182 @@
+# =============================================================================
+# CMED Fleet & Operations Dashboard — .gitignore
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Environment & Secrets
+# ---------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+config/local*
+
+# ---------------------------------------------------------------------------
+# Python / Flask Backend
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+*.mo
+*.pot
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+instance/
+.webassets-cache
+.scrapy
+docs/_build/
+target/
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# Flask
+backend/instance/
+backend/.webassets-cache
+
+# ---------------------------------------------------------------------------
+# Node.js / React Frontend
+# ---------------------------------------------------------------------------
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
+# Vite
+frontend/.vite/
+
+# React
+frontend/build/
+
+# ---------------------------------------------------------------------------
+# Docker
+# ---------------------------------------------------------------------------
+.dockerignore
+.docker/
+docker-compose.override.yml
+
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
+*.db
+*.sql
+*.sqlite
+*.sqlite3
+postgres_data/
+pgdata/
+
+# ---------------------------------------------------------------------------
+# IDE / Editors
+# ---------------------------------------------------------------------------
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.tmproj
+*.esproj
+
+# ---------------------------------------------------------------------------
+# OS Files
+# ---------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Logs
+# ---------------------------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ---------------------------------------------------------------------------
+# Misc
+# ---------------------------------------------------------------------------
+*.tgz
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.bak
+*.tmp
+*.temp
+*.orig
+*.rej
+
+# ---------------------------------------------------------------------------
+# Keep These
+# ---------------------------------------------------------------------------
+!frontend/public/
+!frontend/src/assets/

@@ -1,0 +1,35 @@
+# =============================================================================
+# CMED Backend — Development Dockerfile
+# =============================================================================
+# Uses Flask built-in dev server with debug mode and auto-reload.
+# Volume-mounted in docker-compose.dev.yml for live code reloading.
+# No Gunicorn — single process, verbose logging, instant crash feedback.
+# =============================================================================
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code (will be overridden by volume mount in dev compose)
+COPY . .
+
+# Expose Flask dev server port
+EXPOSE 5000
+
+# Environment
+ENV FLASK_APP=run.py
+ENV PYTHONUNBUFFERED=1
+
+# Development command: Flask dev server with debug and reload
+CMD ["python", "run.py"]

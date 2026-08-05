@@ -1,0 +1,169 @@
+@startuml CMED_Database_Schema
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    ArrowColor #333
+    BorderColor #333
+}
+
+' Enum-like notes for status values
+note right of Vehicle::status
+  active, inactive, maintenance, 
+  critical, charging
+end note
+
+note right of Ticket::status
+  open, inprogress, 
+  resolved, closed
+end note
+
+note right of MaintenanceRecord::status
+  completed, pending, cancelled
+end note
+
+note right of Incident::status
+  open, inprogress, resolved
+end note
+
+note right of Asset::status
+  active, inactive, maintenance
+end note
+
+note right of Route::status
+  active, charging, 
+  maintenance, inactive
+end note
+
+' ======== CLASSES ========
+
+class Vehicle {
+  + id : String(20) <<PK>>
+  + type : String(50)
+  + model : String(100)
+  + reg_number : String(20) <<Unique>>
+  + location : String(100)
+  + fuel_type : String(20)
+  + battery_level : Integer
+  + charging_status : String(50)
+  + fuel_level : Integer
+  + status : String(20)
+  + last_service_date : Date
+  + next_service_date : Date
+  + mileage : Integer
+  + hours_run : Integer
+  + created_at : DateTime
+  + updated_at : DateTime
+}
+
+class MaintenanceRecord {
+  + id : String(30) <<PK>>
+  ~ vehicle_id : String(20) <<FK>>
+  + service_type : String(100)
+  + service_date : Date
+  + mechanic : String(100)
+  + cost : Numeric(10,2)
+  + parts_used : Text
+  + status : String(20)
+  + next_due_date : Date
+  + notes : Text
+  + created_at : DateTime
+}
+
+class Incident {
+  + id : String(30) <<PK>>
+  ~ vehicle_id : String(20) <<FK>>
+  + driver : String(100)
+  + incident_type : String(50)
+  + severity : String(20)
+  + description : Text
+  + location : String(200)
+  + reported_at : DateTime
+  + status : String(20)
+  + assigned_to : String(100)
+  + created_at : DateTime
+  + updated_at : DateTime
+}
+
+class Route {
+  + id : String(20) <<PK>>
+  + route_name : String(200)
+  ~ bus_id : String(20) <<FK>>
+  + driver : String(100)
+  + status : String(20)
+  + passengers : Integer
+  + start_time : String(10)
+  + current_location : String(200)
+  + next_stop : String(200)
+  + delay : String(50)
+  + created_at : DateTime
+  + updated_at : DateTime
+}
+
+class Asset {
+  + id : String(20) <<PK>>
+  + name : String(200)
+  + asset_type : String(50)
+  + serial_number : String(100) <<Unique>>
+  + department : String(50)
+  + assigned_to : String(100)
+  + purchase_date : Date
+  + warranty_expiry : Date
+  + status : String(20)
+  + location : String(100)
+  + specifications : Text
+  + supplier : String(100)
+  + cost : Numeric(10,2)
+  + created_at : DateTime
+  + updated_at : DateTime
+}
+
+class Ticket {
+  + id : String(20) <<PK>>
+  + title : String(200)
+  + description : Text
+  + category : String(50)
+  + priority : String(20)
+  + requester : String(100)
+  + requester_email : String(100)
+  + department : String(50)
+  + assigned_to : String(100)
+  + status : String(20)
+  + sla_target : String(20)
+  + sla_deadline : DateTime
+  + created_at : DateTime
+  + updated_at : DateTime
+  + resolved_at : DateTime
+}
+
+class TicketComment {
+  + id : Integer <<PK>>
+  ~ ticket_id : String(20) <<FK>>
+  + author : String(100)
+  + author_role : String(50)
+  + text : Text
+  + created_at : DateTime
+}
+
+class ComplianceCheck {
+  + id : Integer <<PK>>
+  + department : String(50) <<Unique>>
+  + staff_count : Integer
+  + backup_status : String(20)
+  + last_backup : DateTime
+  + training_status : String(20)
+  + last_training : DateTime
+  + policy_ack_rate : Integer
+  + created_at : DateTime
+  + updated_at : DateTime
+}
+
+' ======== RELATIONSHIPS ========
+
+Vehicle "1" --{ "0..*" MaintenanceRecord : has\n<<cascade delete>>
+Vehicle "1" --{ "0..*" Incident : reports
+Vehicle "1" --{ "0..*" Route : operates\n(bus_id)
+
+Ticket "1" --{ "0..*" TicketComment : contains\n<<cascade delete>>
+
+@enduml
