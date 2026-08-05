@@ -1,26 +1,55 @@
-/* CMED Fleet Dashboard - Global Styles */
+/* CMED Fleet Dashboard - Global Styles
+   -----------------------------------------------------------
+   Design direction: control-room / asset-tag aesthetic.
+   Signature: colored "asset rail" (left/top accent bars) on
+   cards and nav items, mirroring how physical equipment and
+   manifests are tagged, plus monospace figures for anything
+   that reads like a live readout (stat counts, table numbers).
+   ----------------------------------------------------------- */
 :root {
-  --cmed-primary: #1a5276;
-  --cmed-primary-dark: #154360;
-  --cmed-secondary: #27ae60;
-  --cmed-secondary-dark: #1e8449;
-  --cmed-accent: #f39c12;
-  --cmed-danger: #e74c3c;
-  --cmed-warning: #f1c40f;
-  --cmed-info: #3498db;
-  --cmed-bg: #f4f6f9;
+  /* Core palette — deep operational teal + hazard amber accent,
+     kept out of the generic clay/terracotta + cream territory */
+  --cmed-ink: #14232e;
+  --cmed-primary: #0e6e5d;
+  --cmed-primary-dark: #0a5147;
+  --cmed-primary-tint: rgba(14, 110, 93, 0.1);
+  --cmed-amber: #d98e2b;
+  --cmed-amber-tint: rgba(217, 142, 43, 0.12);
+  --cmed-steel: #4c7a96;
+  --cmed-steel-tint: rgba(76, 122, 150, 0.12);
+  --cmed-danger: #c4453c;
+  --cmed-danger-tint: rgba(196, 69, 60, 0.1);
+  --cmed-neutral: #6b7770;
+  --cmed-neutral-tint: rgba(107, 119, 112, 0.12);
+
+  /* Legacy aliases kept so untouched page files (which reference
+     --cmed-secondary / --cmed-accent / --cmed-info / --cmed-warning
+     inline) still resolve to the new palette */
+  --cmed-secondary: var(--cmed-primary);
+  --cmed-secondary-dark: var(--cmed-primary-dark);
+  --cmed-accent: var(--cmed-amber);
+  --cmed-warning: var(--cmed-amber);
+  --cmed-info: var(--cmed-steel);
+
+  --cmed-bg: #f2f1ec;
   --cmed-card: #ffffff;
-  --cmed-text: #2c3e50;
-  --cmed-text-light: #7f8c8d;
-  --cmed-border: #e1e8ed;
-  --cmed-sidebar: #1a252f;
-  --cmed-sidebar-hover: #243342;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --cmed-text: #1c2b26;
+  --cmed-text-light: #6b7770;
+  --cmed-border: #dfe0d8;
+  --cmed-sidebar: #14232e;
+  --cmed-sidebar-hover: #1d3441;
+
+  --shadow-sm: 0 1px 2px rgba(20, 35, 46, 0.06);
+  --shadow-md: 0 6px 16px rgba(20, 35, 46, 0.08);
+  --shadow-lg: 0 16px 36px rgba(20, 35, 46, 0.14);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 }
 
 * {
@@ -30,11 +59,32 @@
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
   background: var(--cmed-bg);
   color: var(--cmed-text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+}
+
+/* Visible keyboard focus everywhere — required for a dashboard
+   that's meant to be operable without a mouse */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--cmed-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* Scrollbar */
@@ -61,9 +111,11 @@ body {
 }
 
 .page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--cmed-text);
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--cmed-ink);
   margin-bottom: 4px;
 }
 
@@ -76,7 +128,7 @@ body {
 /* Card Styles */
 .card {
   background: var(--cmed-card);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--cmed-border);
   padding: 20px;
@@ -95,22 +147,27 @@ body {
 }
 
 .card-title {
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
   font-weight: 600;
-  color: var(--cmed-text);
+  color: var(--cmed-ink);
 }
 
-/* Stat Card */
+/* Stat Card — asset-rail treatment. Uses :has() to read the
+   existing .stat-icon color modifier (blue/green/orange/red)
+   already present in every page, so every stat card across the
+   app picks up a matching accent without editing each page. */
 .stat-card {
   background: var(--cmed-card);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--cmed-border);
-  padding: 20px;
+  border-top: 3px solid var(--cmed-border);
+  padding: 18px 20px;
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .stat-card:hover {
@@ -118,9 +175,14 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+.stat-card:has(.stat-icon.blue) { border-top-color: var(--cmed-steel); }
+.stat-card:has(.stat-icon.green) { border-top-color: var(--cmed-primary); }
+.stat-card:has(.stat-icon.orange) { border-top-color: var(--cmed-amber); }
+.stat-card:has(.stat-icon.red) { border-top-color: var(--cmed-danger); }
+
 .stat-icon {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -128,31 +190,37 @@ body {
   flex-shrink: 0;
 }
 
-.stat-icon.blue { background: rgba(52, 152, 219, 0.15); color: var(--cmed-info); }
-.stat-icon.green { background: rgba(39, 174, 96, 0.15); color: var(--cmed-secondary); }
-.stat-icon.orange { background: rgba(243, 156, 18, 0.15); color: var(--cmed-accent); }
-.stat-icon.red { background: rgba(231, 76, 60, 0.15); color: var(--cmed-danger); }
+.stat-icon.blue { background: var(--cmed-steel-tint); color: var(--cmed-steel); }
+.stat-icon.green { background: var(--cmed-primary-tint); color: var(--cmed-primary); }
+.stat-icon.orange { background: var(--cmed-amber-tint); color: var(--cmed-amber); }
+.stat-icon.red { background: var(--cmed-danger-tint); color: var(--cmed-danger); }
 
 .stat-content h3 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--cmed-text);
+  font-family: var(--font-mono);
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: var(--cmed-ink);
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .stat-content p {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--cmed-text-light);
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .stat-trend {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  margin-top: 4px;
+  margin-top: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
 }
 
-.stat-trend.up { color: var(--cmed-secondary); }
+.stat-trend.up { color: var(--cmed-primary); }
 .stat-trend.down { color: var(--cmed-danger); }
 
 /* Button Styles */
@@ -162,12 +230,13 @@ body {
   gap: 8px;
   padding: 10px 18px;
   border-radius: var(--radius-sm);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
   transition: all 0.2s ease;
   text-decoration: none;
+  font-family: var(--font-body);
 }
 
 .btn-primary {
@@ -180,12 +249,12 @@ body {
 }
 
 .btn-secondary {
-  background: var(--cmed-secondary);
+  background: var(--cmed-ink);
   color: white;
 }
 
 .btn-secondary:hover {
-  background: var(--cmed-secondary-dark);
+  background: #0c1a22;
 }
 
 .btn-outline {
@@ -201,7 +270,7 @@ body {
 
 .btn-sm {
   padding: 6px 12px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
 /* Form Styles */
@@ -225,7 +294,7 @@ body {
   border: 1.5px solid var(--cmed-border);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
-  font-family: inherit;
+  font-family: var(--font-body);
   background: var(--cmed-card);
   color: var(--cmed-text);
   transition: border-color 0.2s ease;
@@ -270,6 +339,11 @@ body {
   margin: 0 auto;
 }
 
+/* Table figures read as data, not prose */
+.data-table td {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -282,8 +356,8 @@ body {
 
 /* Loading */
 .loading-spinner {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border: 3px solid var(--cmed-border);
   border-top-color: var(--cmed-primary);
   border-radius: 50%;

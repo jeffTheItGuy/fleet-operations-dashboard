@@ -54,14 +54,14 @@ def seed_vehicles():
 
 def seed_maintenance_records():
     records = [
-        {'id': 'SRV-2026-089', 'vehicle': 'ZUP-104', 'type': 'Oil Change', 'date': date(2026,7,15), 'mechanic': 'T. Moyo', 'cost': 180, 'parts': 'Engine Oil, Filter', 'status': 'completed', 'next': '2026-10-15'},
-        {'id': 'SRV-2026-088', 'vehicle': 'ZUP-202', 'type': 'Battery Check', 'date': date(2026,7,12), 'mechanic': 'P. Chiweshe', 'cost': 0, 'parts': 'N/A', 'status': 'completed', 'next': '2026-10-12'},
-        {'id': 'SRV-2026-087', 'vehicle': 'REC-032', 'type': 'Brake Replacement', 'date': date(2026,7,8), 'mechanic': 'J. Ncube', 'cost': 420, 'parts': 'Brake Pads, Discs', 'status': 'completed', 'next': '2027-01-08'},
-        {'id': 'SRV-2026-086', 'vehicle': 'HAU-014', 'type': 'Tire Replacement', 'date': date(2026,7,5), 'mechanic': 'T. Moyo', 'cost': 1200, 'parts': '6x Truck Tires', 'status': 'completed', 'next': '2027-01-05'},
-        {'id': 'SRV-2026-085', 'vehicle': 'ZUP-103', 'type': 'Transmission Service', 'date': date(2026,7,1), 'mechanic': 'J. Ncube', 'cost': 850, 'parts': 'Transmission Fluid', 'status': 'completed', 'next': '2027-01-01'},
+        {'id': 'SRV-2026-089', 'vehicle': 'COM-001', 'type': 'Oil Change', 'date': date(2026,7,15), 'mechanic': 'T. Moyo', 'cost': 180, 'parts': 'Engine Oil, Filter', 'status': 'completed', 'next': '2026-10-15'},
+        {'id': 'SRV-2026-088', 'vehicle': 'EV-002', 'type': 'Battery Check', 'date': date(2026,7,12), 'mechanic': 'P. Chiweshe', 'cost': 0, 'parts': 'N/A', 'status': 'completed', 'next': '2026-10-12'},
+        {'id': 'SRV-2026-087', 'vehicle': 'COM-003', 'type': 'Brake Replacement', 'date': date(2026,7,8), 'mechanic': 'J. Ncube', 'cost': 420, 'parts': 'Brake Pads, Discs', 'status': 'completed', 'next': '2027-01-08'},
+        {'id': 'SRV-2026-086', 'vehicle': 'COM-004', 'type': 'Tire Replacement', 'date': date(2026,7,5), 'mechanic': 'T. Moyo', 'cost': 1200, 'parts': '6x Truck Tires', 'status': 'completed', 'next': '2027-01-05'},
+        {'id': 'SRV-2026-085', 'vehicle': 'COM-002', 'type': 'Transmission Service', 'date': date(2026,7,1), 'mechanic': 'J. Ncube', 'cost': 850, 'parts': 'Transmission Fluid', 'status': 'completed', 'next': '2027-01-01'},
         {'id': 'SRV-2026-084', 'vehicle': 'EV-003', 'type': 'Software Update', 'date': date(2026,6,28), 'mechanic': 'P. Chiweshe', 'cost': 0, 'parts': 'N/A', 'status': 'completed', 'next': '2026-09-28'},
-        {'id': 'SRV-2026-083', 'vehicle': 'ZUP-101', 'type': 'Coolant Flush', 'date': date(2026,6,25), 'mechanic': 'T. Moyo', 'cost': 150, 'parts': 'Coolant', 'status': 'completed', 'next': '2026-12-25'},
-        {'id': 'SRV-2026-082', 'vehicle': 'REC-031', 'type': 'Engine Tune-Up', 'date': date(2026,6,20), 'mechanic': 'J. Ncube', 'cost': 320, 'parts': 'Spark Plugs, Filters', 'status': 'completed', 'next': '2026-12-20'},
+        {'id': 'SRV-2026-083', 'vehicle': 'COM-001', 'type': 'Coolant Flush', 'date': date(2026,6,25), 'mechanic': 'T. Moyo', 'cost': 150, 'parts': 'Coolant', 'status': 'completed', 'next': '2026-12-25'},
+        {'id': 'SRV-2026-082', 'vehicle': 'COM-006', 'type': 'Engine Tune-Up', 'date': date(2026,6,20), 'mechanic': 'J. Ncube', 'cost': 320, 'parts': 'Spark Plugs, Filters', 'status': 'completed', 'next': '2026-12-20'},
     ]
 
     for r_data in records:
@@ -154,14 +154,14 @@ def seed_tickets():
 
 def seed_routes():
     routes = [
-        {'id': 'R-001', 'name': 'Harare CBD - Mbare', 'bus': 'ZUP-104', 'driver': 'J. Mupfumi', 'status': 'active', 'passengers': 45, 'start': '05:30', 'current': 'Mbare Terminus', 'next': 'Copacabana', 'delay': 'On time'},
+        {'id': 'R-001', 'name': 'Harare CBD - Mbare', 'bus': 'COM-001', 'driver': 'J. Mupfumi', 'status': 'active', 'passengers': 45, 'start': '05:30', 'current': 'Mbare Terminus', 'next': 'Copacabana', 'delay': 'On time'},
         {'id': 'R-002', 'name': 'Harare - Chitungwiza', 'bus': 'EV-003', 'driver': 'T. Chikwava', 'status': 'active', 'passengers': 38, 'start': '06:00', 'current': 'Chitungwiza Town Centre', 'next': 'Zengeza 4', 'delay': 'On time'},
-        {'id': 'R-003', 'name': 'Harare - Borrowdale', 'bus': 'ZUP-105', 'driver': 'S. Mangwiro', 'status': 'active', 'passengers': 28, 'start': '06:15', 'current': 'Samora Machel Ave', 'next': 'Borrowdale Road', 'delay': '+10 min'},
-        {'id': 'R-004', 'name': 'Harare - Kuwadzana', 'bus': 'ZUP-106', 'driver': 'P. Musvuri', 'status': 'active', 'passengers': 52, 'start': '05:45', 'current': 'Kuwadzana Roundabout', 'next': 'Kuwadzana 3', 'delay': 'On time'},
+        {'id': 'R-003', 'name': 'Harare - Borrowdale', 'bus': 'COM-002', 'driver': 'S. Mangwiro', 'status': 'active', 'passengers': 28, 'start': '06:15', 'current': 'Samora Machel Ave', 'next': 'Borrowdale Road', 'delay': '+10 min'},
+        {'id': 'R-004', 'name': 'Harare - Kuwadzana', 'bus': 'COM-005', 'driver': 'P. Musvuri', 'status': 'active', 'passengers': 52, 'start': '05:45', 'current': 'Kuwadzana Roundabout', 'next': 'Kuwadzana 3', 'delay': 'On time'},
         {'id': 'R-005', 'name': 'Harare - Highfield', 'bus': 'EV-002', 'driver': 'R. Gumbo', 'status': 'charging', 'passengers': 0, 'start': '07:00', 'current': 'Harare Depot', 'next': 'Glenara Shops', 'delay': 'Delayed'},
-        {'id': 'R-006', 'name': 'Harare - Epworth', 'bus': 'ZUP-107', 'driver': 'M. Chari', 'status': 'active', 'passengers': 41, 'start': '06:30', 'current': 'Dombo Shops', 'next': 'Stop 4', 'delay': 'On time'},
-        {'id': 'R-007', 'name': 'Victoria Falls - Airport', 'bus': 'ZUP-208', 'driver': 'K. Ndhlovu', 'status': 'active', 'passengers': 22, 'start': '08:00', 'current': 'Airport Road', 'next': 'Victoria Falls Airport', 'delay': 'On time'},
-        {'id': 'R-008', 'name': 'Bulawayo - Nketa', 'bus': 'ZUP-108', 'driver': 'L. Sibanda', 'status': 'maintenance', 'passengers': 0, 'start': None, 'current': 'Bulawayo Depot', 'next': None, 'delay': 'Out of Service'},
+        {'id': 'R-006', 'name': 'Harare - Epworth', 'bus': 'COM-007', 'driver': 'M. Chari', 'status': 'active', 'passengers': 41, 'start': '06:30', 'current': 'Dombo Shops', 'next': 'Stop 4', 'delay': 'On time'},
+        {'id': 'R-007', 'name': 'Victoria Falls - Airport', 'bus': 'EV-010', 'driver': 'K. Ndhlovu', 'status': 'active', 'passengers': 22, 'start': '08:00', 'current': 'Airport Road', 'next': 'Victoria Falls Airport', 'delay': 'On time'},
+        {'id': 'R-008', 'name': 'Bulawayo - Nketa', 'bus': 'COM-009', 'driver': 'L. Sibanda', 'status': 'maintenance', 'passengers': 0, 'start': None, 'current': 'Bulawayo Depot', 'next': None, 'delay': 'Out of Service'},
     ]
 
     for r_data in routes:
@@ -212,12 +212,12 @@ def seed_compliance():
 
 def seed_incidents():
     incidents = [
-        {'id': 'INC-2026-042', 'vehicle': 'ZUP-105', 'driver': 'S. Mangwiro', 'type': 'Mechanical', 'severity': 'medium', 'desc': 'Air conditioning unit failure on Route 3', 'loc': 'Samora Machel Ave', 'status': 'open', 'assigned': 'T. Moyo'},
+        {'id': 'INC-2026-042', 'vehicle': 'COM-002', 'driver': 'S. Mangwiro', 'type': 'Mechanical', 'severity': 'medium', 'desc': 'Air conditioning unit failure on Route 3', 'loc': 'Samora Machel Ave', 'status': 'open', 'assigned': 'T. Moyo'},
         {'id': 'INC-2026-041', 'vehicle': 'EV-004', 'driver': 'P. Chiweshe', 'type': 'Electrical', 'severity': 'high', 'desc': 'Charging port damaged at Victoria Falls depot', 'loc': 'Victoria Falls Depot', 'status': 'inprogress', 'assigned': 'P. Chiweshe'},
-        {'id': 'INC-2026-040', 'vehicle': 'HAU-015', 'driver': 'K. Dube', 'type': 'Road Hazard', 'severity': 'low', 'desc': 'Pothole damage to tire on A5 highway', 'loc': 'A5 Highway, km 45', 'status': 'resolved', 'assigned': 'T. Moyo'},
-        {'id': 'INC-2026-039', 'vehicle': 'ZUP-104', 'driver': 'J. Mupfumi', 'type': 'Mechanical', 'severity': 'medium', 'desc': 'Brake squeaking reported by passengers', 'loc': 'Mbare Terminus', 'status': 'resolved', 'assigned': 'J. Ncube'},
-        {'id': 'INC-2026-038', 'vehicle': 'REC-033', 'driver': 'M. Tshuma', 'type': 'Mechanical', 'severity': 'high', 'desc': 'Engine overheating during recovery operation', 'loc': 'Bulawayo Road', 'status': 'inprogress', 'assigned': 'J. Ncube'},
-        {'id': 'INC-2026-037', 'vehicle': 'ZUP-203', 'driver': 'T. Chikwava', 'type': 'Passenger', 'severity': 'low', 'desc': 'Seat damage in rear row', 'loc': 'Chitungwiza Depot', 'status': 'resolved', 'assigned': 'T. Moyo'},
+        {'id': 'INC-2026-040', 'vehicle': 'COM-004', 'driver': 'K. Dube', 'type': 'Road Hazard', 'severity': 'low', 'desc': 'Pothole damage to tire on A5 highway', 'loc': 'A5 Highway, km 45', 'status': 'resolved', 'assigned': 'T. Moyo'},
+        {'id': 'INC-2026-039', 'vehicle': 'COM-001', 'driver': 'J. Mupfumi', 'type': 'Mechanical', 'severity': 'medium', 'desc': 'Brake squeaking reported by passengers', 'loc': 'Mbare Terminus', 'status': 'resolved', 'assigned': 'J. Ncube'},
+        {'id': 'INC-2026-038', 'vehicle': 'COM-003', 'driver': 'M. Tshuma', 'type': 'Mechanical', 'severity': 'high', 'desc': 'Engine overheating during recovery operation', 'loc': 'Bulawayo Road', 'status': 'inprogress', 'assigned': 'J. Ncube'},
+        {'id': 'INC-2026-037', 'vehicle': 'EV-003', 'driver': 'T. Chikwava', 'type': 'Passenger', 'severity': 'low', 'desc': 'Seat damage in rear row', 'loc': 'Chitungwiza Depot', 'status': 'resolved', 'assigned': 'T. Moyo'},
     ]
 
     for i_data in incidents:
@@ -247,4 +247,4 @@ def seed_all_data():
     seed_routes()
     seed_compliance()
     seed_incidents()
-    print("\nAll demo data seeded successfully!")
+    print("All demo data seeded successfully!")

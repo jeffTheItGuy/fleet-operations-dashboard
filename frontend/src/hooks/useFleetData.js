@@ -10,14 +10,10 @@ export function useFleetData(type = 'all') {
     const fetchData = async () => {
       try {
         setLoading(true)
-        // In demo mode, we use mock data since backend may not be running
-        // When backend is connected, uncomment the API calls below
-
-        // const response = type === 'ev' 
-        //   ? await fleetApi.getEVFleet()
-        //   : await fleetApi.getCombustionFleet()
-        // setData(response.data)
-
+        const response = type === 'ev' 
+          ? await fleetApi.getEVFleet()
+          : await fleetApi.getCombustionFleet()
+        setData(response.data)
         setLoading(false)
       } catch (err) {
         setError(err.message)
@@ -32,14 +28,22 @@ export function useFleetData(type = 'all') {
 }
 
 export function useVehicleStats() {
-  const [stats, setStats] = useState({
-    total: 187,
-    ev: 44,
-    combustion: 143,
-    active: 168,
-    maintenance: 23,
-    critical: 2,
-  })
+  const [stats, setStats] = useState({})
+  const [loading, setLoading] = useState(true)
 
-  return stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fleetApi.getFleetStats()
+        setStats(response.data)
+      } catch {
+        // silent fail for demo
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStats()
+  }, [])
+
+  return { stats, loading }
 }

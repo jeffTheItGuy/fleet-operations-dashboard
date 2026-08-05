@@ -1,16 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Shield, CheckCircle2, AlertTriangle, XCircle, Users, FileText, Lock, Database } from 'lucide-react'
+import { complianceApi } from '../../services/api.js'
 import DataTable from '../../components/DataTable/DataTable.jsx'
 import StatusBadge from '../../components/StatusBadge/StatusBadge.jsx'
-
-const departmentData = [
-  { id: 1, department: 'ICT', backupStatus: 'compliant', lastBackup: '2026-08-05 02:00', trainingStatus: 'compliant', lastTraining: '2026-07-20', staffCount: 8, policyAck: 100 },
-  { id: 2, department: 'Finance', backupStatus: 'compliant', lastBackup: '2026-08-04 23:00', trainingStatus: 'compliant', lastTraining: '2026-07-18', staffCount: 12, policyAck: 100 },
-  { id: 3, department: 'HR', backupStatus: 'compliant', lastBackup: '2026-08-05 01:00', trainingStatus: 'pending', lastTraining: '2026-06-15', staffCount: 6, policyAck: 83 },
-  { id: 4, department: 'Operations', backupStatus: 'noncompliant', lastBackup: '2026-08-01 22:00', trainingStatus: 'compliant', lastTraining: '2026-07-22', staffCount: 24, policyAck: 92 },
-  { id: 5, department: 'Transport', backupStatus: 'compliant', lastBackup: '2026-08-05 03:00', trainingStatus: 'pending', lastTraining: '2026-06-20', staffCount: 18, policyAck: 78 },
-  { id: 6, department: 'Maintenance', backupStatus: 'compliant', lastBackup: '2026-08-04 21:00', trainingStatus: 'compliant', lastTraining: '2026-07-25', staffCount: 15, policyAck: 100 },
-]
 
 const columns = [
   { key: 'department', label: 'Department' },
@@ -20,13 +12,13 @@ const columns = [
     label: 'Data Backup',
     render: (val) => <StatusBadge status={val} customLabel={val === 'compliant' ? 'On Schedule' : 'Overdue'} />
   },
-  { key: 'lastBackup', label: 'Last Backup' },
+  { key: 'lastBackup', label: 'Last Backup', render: (val) => val ? new Date(val).toLocaleString() : '—' },
   {
     key: 'trainingStatus',
     label: 'Cybersecurity Training',
     render: (val) => <StatusBadge status={val} customLabel={val === 'compliant' ? 'Completed' : 'Pending'} />
   },
-  { key: 'lastTraining', label: 'Last Training' },
+  { key: 'lastTraining', label: 'Last Training', render: (val) => val ? new Date(val).toLocaleString() : '—' },
   {
     key: 'policyAck',
     label: 'Policy Acknowledgment',
@@ -47,9 +39,18 @@ const columns = [
 ]
 
 function ComplianceTrackerPage() {
-  const compliantDepts = departmentData.filter(d => d.backupStatus === 'compliant' && d.trainingStatus === 'compliant').length
-  const totalStaff = departmentData.reduce((sum, d) => sum + d.staffCount, 0)
-  const avgPolicyAck = Math.round(departmentData.reduce((sum, d) => sum + d.policyAck, 0) / departmentData.length)
+  const [departmentData, setDepartmentData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    complianceApi.getDepartments()
+      .then(res => setDepartmentData(res.data))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const compliantDepts = departmentData?.filter(d => d.backupStatus === 'compliant' && d.trainingStatus === 'compliant').length || 0
+  const totalStaff = departmentData?.reduce((sum, d) => sum + (d.staffCount || 0), 0) || 0
+  const avgPolicyAck = departmentData?.length ? Math.round(departmentData.reduce((sum, d) => sum + (d.policyAck || 0), 0) / departmentData.length) : 0
 
   return (
     <div className="page-content fade-in">
@@ -62,7 +63,7 @@ function ComplianceTrackerPage() {
         <div className="stat-card">
           <div className="stat-icon green"><Shield size={24} /></div>
           <div className="stat-content">
-            <h3>{compliantDepts}/{departmentData.length}</h3>
+            <h3>{compliantDepts}/{departmentData?.length || 0}</h3>
             <p>Fully Compliant Depts</p>
           </div>
         </div>
@@ -167,9 +168,12 @@ function ComplianceTrackerPage() {
       <div className="card">
         <div className="card-header">
           <h3 className="card-title">Department Compliance Matrix</h3>
-          <button className="btn btn-outline btn-sm">Export Report</button>
         </div>
-        <DataTable columns={columns} data={departmentData} pagination={false} />
+        {loading ? (
+          <div className="loading-container"><div className="loading-spinner" /></div>
+        ) : (
+          <DataTable columns={columns} data={departmentData} pagination={false} />
+        )}
       </div>
     </div>
   )

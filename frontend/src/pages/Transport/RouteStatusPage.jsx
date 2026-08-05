@@ -1,18 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Bus, MapPin, Clock, Users, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { transportApi } from '../../services/api.js'
 import DataTable from '../../components/DataTable/DataTable.jsx'
 import StatusBadge from '../../components/StatusBadge/StatusBadge.jsx'
-
-const routeData = [
-  { id: 'R-001', routeName: 'Harare CBD - Mbare', bus: 'ZUP-104', driver: 'J. Mupfumi', status: 'active', passengers: 45, startTime: '05:30', currentLocation: 'Mbare Terminus', nextStop: 'Copacabana', delay: 'On time' },
-  { id: 'R-002', routeName: 'Harare - Chitungwiza', bus: 'EV-003', driver: 'T. Chikwava', status: 'active', passengers: 38, startTime: '06:00', currentLocation: 'Chitungwiza Town Centre', nextStop: 'Zengeza 4', delay: 'On time' },
-  { id: 'R-003', routeName: 'Harare - Borrowdale', bus: 'ZUP-105', driver: 'S. Mangwiro', status: 'active', passengers: 28, startTime: '06:15', currentLocation: 'Samora Machel Ave', nextStop: 'Borrowdale Road', delay: '+10 min' },
-  { id: 'R-004', routeName: 'Harare - Kuwadzana', bus: 'ZUP-106', driver: 'P. Musvuri', status: 'active', passengers: 52, startTime: '05:45', currentLocation: 'Kuwadzana Roundabout', nextStop: 'Kuwadzana 3', delay: 'On time' },
-  { id: 'R-005', routeName: 'Harare - Highfield', bus: 'EV-002', driver: 'R. Gumbo', status: 'charging', passengers: 0, startTime: '07:00', currentLocation: 'Harare Depot', nextStop: 'Glenara Shops', delay: 'Delayed' },
-  { id: 'R-006', routeName: 'Harare - Epworth', bus: 'ZUP-107', driver: 'M. Chari', status: 'active', passengers: 41, startTime: '06:30', currentLocation: 'Dombo Shops', nextStop: 'Stop 4', delay: 'On time' },
-  { id: 'R-007', routeName: 'Victoria Falls - Airport', bus: 'ZUP-208', driver: 'K. Ndhlovu', status: 'active', passengers: 22, startTime: '08:00', currentLocation: 'Airport Road', nextStop: 'Victoria Falls Airport', delay: 'On time' },
-  { id: 'R-008', routeName: 'Bulawayo - Nketa', bus: 'ZUP-108', driver: 'L. Sibanda', status: 'maintenance', passengers: 0, startTime: '—', currentLocation: 'Bulawayo Depot', nextStop: '—', delay: 'Out of Service' },
-]
 
 const columns = [
   { key: 'routeName', label: 'Route' },
@@ -24,9 +14,9 @@ const columns = [
     render: (val) => <StatusBadge status={val} />
   },
   { key: 'passengers', label: 'Passengers', render: (val) => val > 0 ? val : '—' },
-  { key: 'startTime', label: 'Start Time' },
+  { key: 'startTime', label: 'Start Time', render: (val) => val || '—' },
   { key: 'currentLocation', label: 'Current Location' },
-  { key: 'nextStop', label: 'Next Stop' },
+  { key: 'nextStop', label: 'Next Stop', render: (val) => val || '—' },
   {
     key: 'delay',
     label: 'Delay',
@@ -45,8 +35,17 @@ const columns = [
 ]
 
 function RouteStatusPage() {
-  const activeRoutes = routeData.filter(r => r.status === 'active').length
-  const totalPassengers = routeData.filter(r => r.status === 'active').reduce((sum, r) => sum + r.passengers, 0)
+  const [routeData, setRouteData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    transportApi.getRoutes()
+      .then(res => setRouteData(res.data))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const activeRoutes = routeData?.filter(r => r.status === 'active').length || 0
+  const totalPassengers = routeData?.filter(r => r.status === 'active').reduce((sum, r) => sum + (r.passengers || 0), 0) || 0
 
   return (
     <div className="page-content fade-in">
@@ -73,14 +72,14 @@ function RouteStatusPage() {
         <div className="stat-card">
           <div className="stat-icon orange"><Clock size={24} /></div>
           <div className="stat-content">
-            <h3>1</h3>
+            <h3>{routeData?.filter(r => r.delay !== 'On time').length || 0}</h3>
             <p>Delayed Routes</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon red"><AlertCircle size={24} /></div>
           <div className="stat-content">
-            <h3>2</h3>
+            <h3>{routeData?.filter(r => r.status === 'maintenance' || r.status === 'inactive').length || 0}</h3>
             <p>Out of Service</p>
           </div>
         </div>
@@ -89,9 +88,12 @@ function RouteStatusPage() {
       <div className="card">
         <div className="card-header">
           <h3 className="card-title">Active Routes</h3>
-          <button className="btn btn-outline btn-sm">Refresh Status</button>
         </div>
-        <DataTable columns={columns} data={routeData} pageSize={8} />
+        {loading ? (
+          <div className="loading-container"><div className="loading-spinner" /></div>
+        ) : (
+          <DataTable columns={columns} data={routeData} pageSize={8} />
+        )}
       </div>
     </div>
   )

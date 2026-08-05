@@ -1,13 +1,12 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 from app.extensions import db
 from app.models import MaintenanceRecord, Vehicle
-from datetime import datetime, date
+from datetime import date
 
 bp = Blueprint('maintenance', __name__)
 
 @bp.route('/alerts', methods=['GET'])
 def get_alerts():
-    # Get vehicles with upcoming or overdue maintenance
     today = date.today()
     vehicles = Vehicle.query.filter(
         db.or_(
@@ -36,45 +35,3 @@ def get_alerts():
 def get_service_log():
     records = MaintenanceRecord.query.order_by(MaintenanceRecord.service_date.desc()).all()
     return jsonify([r.to_dict() for r in records])
-
-@bp.route('/schedule', methods=['POST'])
-def schedule_service():
-    data = request.get_json()
-
-    record = MaintenanceRecord(
-        id=data.get('id'),
-        vehicle_id=data.get('vehicleId'),
-        service_type=data.get('serviceType'),
-        service_date=datetime.strptime(data.get('serviceDate'), '%Y-%m-%d').date(),
-        mechanic=data.get('mechanic', 'Unassigned'),
-        cost=data.get('cost', 0),
-        parts_used=data.get('partsUsed', ''),
-        status='pending',
-        next_due_date=datetime.strptime(data.get('nextDueDate'), '%Y-%m-%d').date() if data.get('nextDueDate') else None,
-        notes=data.get('notes', '')
-    )
-
-    db.session.add(record)
-    db.session.commit()
-
-    return jsonify(record.to_dict()), 201
-
-@bp.route('/complete/<id>', methods=['POST'])
-def complete_service(id):
-    record = MaintenanceRecord.query.get_or_404(id)
-    data = request.get_json()
-
-    record.status = 'completed'
-    if data.get('cost'):
-        record.cost = data['cost']
-    if data.get('partsUsed'):
-        record.parts_used = data['partsUsed']
-
-    # Update vehicle next service date
-    vehicle = Vehicle.query.get(record.vehicle_id)
-    if vehicle and record.next_due_date:
-        vehicle.next_service_date = record.next_due_date
-        vehicle.last_service_date = record.service_date
-
-    db.session.commit()
-    return jsonify(record.to_dict())

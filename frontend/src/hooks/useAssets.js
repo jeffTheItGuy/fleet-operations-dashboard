@@ -10,9 +10,8 @@ export function useAssets() {
     const fetchAssets = async () => {
       try {
         setLoading(true)
-        // Uncomment when backend is connected
-        // const response = await assetsApi.getAssets()
-        // setAssets(response.data)
+        const response = await assetsApi.getAssets()
+        setAssets(response.data)
         setLoading(false)
       } catch (err) {
         setError(err.message)

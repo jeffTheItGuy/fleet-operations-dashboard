@@ -1,22 +1,8 @@
 import React from 'react'
-import { Plus, Filter, Battery, Zap, MapPin, Clock } from 'lucide-react'
+import { Filter, Battery, Zap, MapPin } from 'lucide-react'
+import { useFleetData } from '../../hooks/useFleetData.js'
 import DataTable from '../../components/DataTable/DataTable.jsx'
 import StatusBadge from '../../components/StatusBadge/StatusBadge.jsx'
-
-const evFleetData = [
-  { id: 'EV-001', type: 'Electric Bus', model: 'BYD K8', regNumber: 'ZUP-201', location: 'Harare Depot', battery: 92, status: 'active', charging: 'No', lastService: '2026-06-15', mileage: 34200 },
-  { id: 'EV-002', type: 'Electric Bus', model: 'BYD K8', regNumber: 'ZUP-202', location: 'Harare Depot', battery: 45, status: 'charging', charging: 'Station #1', lastService: '2026-05-20', mileage: 28900 },
-  { id: 'EV-003', type: 'Electric Mini-Bus', model: 'BYD T3', regNumber: 'ZUP-203', location: 'Chitungwiza', battery: 78, status: 'active', charging: 'No', lastService: '2026-07-01', mileage: 15600 },
-  { id: 'EV-004', type: 'Electric Bus', model: 'BYD K8', regNumber: 'ZUP-204', location: 'Victoria Falls', battery: 23, status: 'maintenance', charging: 'No', lastService: '2026-04-10', mileage: 41200 },
-  { id: 'EV-005', type: 'Electric Recovery', model: 'JAC N55 EV', regNumber: 'REC-101', location: 'Harare Depot', battery: 88, status: 'active', charging: 'No', lastService: '2026-06-28', mileage: 18900 },
-  { id: 'EV-006', type: 'Electric Luxury Coach', model: 'BYD C8', regNumber: 'ZUP-205', location: 'Harare Depot', battery: 65, status: 'active', charging: 'No', lastService: '2026-05-15', mileage: 22100 },
-  { id: 'EV-007', type: 'Electric Bus', model: 'BYD K8', regNumber: 'ZUP-206', location: 'Bulawayo', battery: 12, status: 'critical', charging: 'No', lastService: '2026-03-20', mileage: 45600 },
-  { id: 'EV-008', type: 'Electric Mini-Bus', model: 'BYD T3', regNumber: 'ZUP-207', location: 'Harare Depot', battery: 95, status: 'active', charging: 'No', lastService: '2026-07-10', mileage: 12300 },
-  { id: 'EV-009', type: 'Electric Recovery', model: 'JAC N55 EV', regNumber: 'REC-102', location: 'Mutare', battery: 56, status: 'active', charging: 'No', lastService: '2026-06-01', mileage: 26700 },
-  { id: 'EV-010', type: 'Electric Bus', model: 'BYD K8', regNumber: 'ZUP-208', location: 'Harare Depot', battery: 34, status: 'charging', charging: 'Station #2', lastService: '2026-05-05', mileage: 31500 },
-  { id: 'EV-011', type: 'Electric Mini-Bus', model: 'BYD T3', regNumber: 'ZUP-209', location: 'Chitungwiza', battery: 81, status: 'active', charging: 'No', lastService: '2026-07-05', mileage: 19800 },
-  { id: 'EV-012', type: 'Electric Bus', model: 'BYD K8', regNumber: 'ZUP-210', location: 'Victoria Falls', battery: 67, status: 'active', charging: 'No', lastService: '2026-06-20', mileage: 27400 },
-]
 
 const columns = [
   { key: 'id', label: 'ID', width: '80px' },
@@ -25,7 +11,7 @@ const columns = [
   { key: 'model', label: 'Model' },
   { key: 'location', label: 'Location' },
   {
-    key: 'battery',
+    key: 'batteryLevel',
     label: 'Battery',
     render: (val) => (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -49,7 +35,7 @@ const columns = [
     render: (val) => <StatusBadge status={val} />
   },
   {
-    key: 'charging',
+    key: 'chargingStatus',
     label: 'Charging',
     render: (val) => val === 'No' ? (
       <span style={{ color: 'var(--cmed-text-light)', fontSize: '0.85rem' }}>—</span>
@@ -59,11 +45,13 @@ const columns = [
       </span>
     )
   },
-  { key: 'lastService', label: 'Last Service' },
-  { key: 'mileage', label: 'Mileage (km)', render: (val) => val.toLocaleString() },
+  { key: 'lastServiceDate', label: 'Last Service', render: (val) => val || '—' },
+  { key: 'mileage', label: 'Mileage (km)', render: (val) => val?.toLocaleString?.() || '—' },
 ]
 
 function EVFleetPage() {
+  const { data: evFleetData, loading, error } = useFleetData('ev')
+
   return (
     <div className="page-content fade-in">
       <h1 className="page-title">Electric Vehicle Fleet</h1>
@@ -75,28 +63,28 @@ function EVFleetPage() {
         <div className="stat-card">
           <div className="stat-icon green"><Zap size={24} /></div>
           <div className="stat-content">
-            <h3>44</h3>
+            <h3>{evFleetData?.length || 0}</h3>
             <p>Total EVs</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon blue"><Battery size={24} /></div>
           <div className="stat-content">
-            <h3>38</h3>
+            <h3>{evFleetData?.filter(v => v.status === 'active').length || 0}</h3>
             <p>Active & Charged</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon orange"><Zap size={24} /></div>
           <div className="stat-content">
-            <h3>6</h3>
+            <h3>{evFleetData?.filter(v => v.status === 'charging').length || 0}</h3>
             <p>Currently Charging</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon red"><MapPin size={24} /></div>
           <div className="stat-content">
-            <h3>2</h3>
+            <h3>{new Set(evFleetData?.map(v => v.location)).size || 0}</h3>
             <p>Depot Locations</p>
           </div>
         </div>
@@ -109,12 +97,15 @@ function EVFleetPage() {
             <button className="btn btn-outline btn-sm">
               <Filter size={14} /> Filter
             </button>
-            <button className="btn btn-primary btn-sm">
-              <Plus size={14} /> Add Vehicle
-            </button>
           </div>
         </div>
-        <DataTable columns={columns} data={evFleetData} pageSize={8} />
+        {loading ? (
+          <div className="loading-container"><div className="loading-spinner" /></div>
+        ) : error ? (
+          <div className="empty-state"><p>Error loading fleet data</p></div>
+        ) : (
+          <DataTable columns={columns} data={evFleetData} pageSize={8} />
+        )}
       </div>
     </div>
   )

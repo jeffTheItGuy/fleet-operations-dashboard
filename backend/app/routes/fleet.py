@@ -1,5 +1,4 @@
-from flask import Blueprint, jsonify, request
-from app.extensions import db
+from flask import Blueprint, jsonify
 from app.models import Vehicle
 
 bp = Blueprint('fleet', __name__)
@@ -17,23 +16,6 @@ def get_combustion_fleet():
 @bp.route('/vehicles/<id>', methods=['GET'])
 def get_vehicle(id):
     vehicle = Vehicle.query.get_or_404(id)
-    return jsonify(vehicle.to_dict())
-
-@bp.route('/vehicles/<id>/status', methods=['PATCH'])
-def update_vehicle_status(id):
-    vehicle = Vehicle.query.get_or_404(id)
-    data = request.get_json()
-
-    if 'status' in data:
-        vehicle.status = data['status']
-    if 'batteryLevel' in data:
-        vehicle.battery_level = data['batteryLevel']
-    if 'fuelLevel' in data:
-        vehicle.fuel_level = data['fuelLevel']
-    if 'location' in data:
-        vehicle.location = data['location']
-
-    db.session.commit()
     return jsonify(vehicle.to_dict())
 
 @bp.route('/stats', methods=['GET'])

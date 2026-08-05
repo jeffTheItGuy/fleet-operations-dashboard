@@ -14,7 +14,13 @@ function Header({ onMenuToggle, isMobileMenuOpen }) {
   return (
     <header className="header">
       <div className="header-left">
-        <button className="menu-toggle" onClick={onMenuToggle}>
+        <button
+          className="menu-toggle"
+          onClick={onMenuToggle}
+          aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={isMobileMenuOpen ? 'true' : 'false'}
+          aria-controls="cmed-sidebar-nav"
+        >
           {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
         <div className={`search-bar ${searchOpen ? 'open' : ''}`}>
@@ -28,6 +34,8 @@ function Header({ onMenuToggle, isMobileMenuOpen }) {
           <button
             className="icon-btn"
             onClick={() => setNotifOpen(!notifOpen)}
+            aria-label="Notifications"
+            aria-expanded={notifOpen ? 'true' : 'false'}
           >
             <Bell size={20} />
             <span className="notification-badge">{notifications.length}</span>

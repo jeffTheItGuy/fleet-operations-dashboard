@@ -10,9 +10,8 @@ export function useTickets() {
     const fetchTickets = async () => {
       try {
         setLoading(true)
-        // Uncomment when backend is connected
-        // const response = await helpdeskApi.getTickets()
-        // setTickets(response.data)
+        const response = await helpdeskApi.getTickets()
+        setTickets(response.data)
         setLoading(false)
       } catch (err) {
         setError(err.message)

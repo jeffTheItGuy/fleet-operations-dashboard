@@ -20,5 +20,13 @@ def init_db():
         db.create_all()
         print('Database initialized!')
 
+# Auto-init on startup
+with app.app_context():
+    db.create_all()
+    from app.models import Vehicle
+    if not Vehicle.query.first():
+        seed_all_data()
+        print('Auto-seeded database on startup')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

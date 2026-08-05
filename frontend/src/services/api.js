@@ -10,75 +10,41 @@ const api = axios.create({
   timeout: 10000,
 })
 
-// Request interceptor - add auth token if available
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('cmed_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => Promise.reject(error)
-)
-
-// Response interceptor - handle common errors
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('cmed_token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(error)
-  }
-)
-
-// Fleet API
+// Fleet API — READ ONLY
 export const fleetApi = {
   getEVFleet: () => api.get('/fleet/ev'),
   getCombustionFleet: () => api.get('/fleet/combustion'),
   getVehicleById: (id) => api.get(`/fleet/vehicles/${id}`),
-  updateVehicleStatus: (id, status) => api.patch(`/fleet/vehicles/${id}/status`, { status }),
+  getFleetStats: () => api.get('/fleet/stats'),
 }
 
-// Maintenance API
+// Maintenance API — READ ONLY
 export const maintenanceApi = {
   getAlerts: () => api.get('/maintenance/alerts'),
   getServiceLog: () => api.get('/maintenance/log'),
-  scheduleService: (data) => api.post('/maintenance/schedule', data),
-  completeService: (id, data) => api.post(`/maintenance/complete/${id}`, data),
 }
 
-// Transport API
+// Transport API — READ ONLY
 export const transportApi = {
   getRoutes: () => api.get('/transport/routes'),
   getIncidents: () => api.get('/transport/incidents'),
-  reportIncident: (data) => api.post('/transport/incidents', data),
 }
 
-// Assets API
+// Assets API — READ ONLY
 export const assetsApi = {
   getAssets: () => api.get('/assets'),
   getAssetById: (id) => api.get(`/assets/${id}`),
-  createAsset: (data) => api.post('/assets', data),
-  updateAsset: (id, data) => api.patch(`/assets/${id}`, data),
 }
 
-// Helpdesk API
+// Helpdesk API — READ ONLY
 export const helpdeskApi = {
   getTickets: () => api.get('/tickets'),
   getTicketById: (id) => api.get(`/tickets/${id}`),
-  createTicket: (data) => api.post('/tickets', data),
-  addComment: (id, data) => api.post(`/tickets/${id}/comments`, data),
-  updateTicketStatus: (id, status) => api.patch(`/tickets/${id}/status`, { status }),
 }
 
-// Compliance API
+// Compliance API — READ ONLY
 export const complianceApi = {
   getDepartments: () => api.get('/compliance/departments'),
-  updateBackupStatus: (deptId, data) => api.patch(`/compliance/departments/${deptId}/backup`, data),
-  updateTrainingStatus: (deptId, data) => api.patch(`/compliance/departments/${deptId}/training`, data),
 }
 
 export default api
