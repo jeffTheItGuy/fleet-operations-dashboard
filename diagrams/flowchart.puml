@@ -1,0 +1,260 @@
+@startuml CMED_Fleet_Operations_Architecture
+!define RECTANGLE class
+
+skinparam backgroundColor #f2f1ec
+skinparam componentStyle rectangle
+
+skinparam rectangle {
+    BackgroundColor<<Frontend>> #ffffff
+    BackgroundColor<<Backend>> #14232e
+    BackgroundColor<<Database>> #e8e8e8
+    BackgroundColor<<External>> #f5f5f5
+    BorderColor #dfe0d8
+    FontColor #1c2b26
+}
+
+skinparam rectangle<<Backend>> {
+    FontColor #ecf0f1
+    BorderColor #0e6e5d
+}
+
+skinparam arrow {
+    Color #6b7770
+    FontColor #6b7770
+}
+
+title CMED Fleet & Operations Dashboard — System Architecture Flow
+
+package "Frontend (React 18 + Vite)" <<Frontend>> {
+    rectangle "Browser Router\n/react-router-dom" as Router <<Frontend>>
+    
+    package "Pages" <<Frontend>> {
+        rectangle "LandingPage" as Landing <<Frontend>>
+        rectangle "Dashboard" as Dashboard <<Frontend>>
+        
+        package "Fleet" <<Frontend>> {
+            rectangle "EVFleetPage" as EVPage <<Frontend>>
+            rectangle "CombustionFleetPage" as CombPage <<Frontend>>
+        }
+        
+        package "Maintenance" <<Frontend>> {
+            rectangle "MaintenanceAlertsPage" as MaintAlerts <<Frontend>>
+            rectangle "ServiceLogPage" as ServiceLog <<Frontend>>
+        }
+        
+        package "Transport" <<Frontend>> {
+            rectangle "RouteStatusPage" as RoutesPage <<Frontend>>
+            rectangle "IncidentLogPage" as IncidentsPage <<Frontend>>
+        }
+        
+        package "IT Assets" <<Frontend>> {
+            rectangle "AssetInventoryPage" as AssetInv <<Frontend>>
+            rectangle "AssetDetailPage" as AssetDet <<Frontend>>
+        }
+        
+        package "Helpdesk" <<Frontend>> {
+            rectangle "TicketListPage" as TicketList <<Frontend>>
+            rectangle "TicketDetailPage" as TicketDet <<Frontend>>
+        }
+        
+        rectangle "ComplianceTrackerPage" as Compliance <<Frontend>>
+    }
+    
+    package "Shared Components" <<Frontend>> {
+        rectangle "Sidebar + Header\n(Layout)" as Layout <<Frontend>>
+        rectangle "DataTable\n(Search, Pagination)" as DataTable <<Frontend>>
+        rectangle "Charts\n(Recharts)" as Charts <<Frontend>>
+        rectangle "StatusBadge" as Badge <<Frontend>>
+    }
+    
+    package "Hooks & Services" <<Frontend>> {
+        rectangle "useFleetData\nuseAssets\nuseTickets" as Hooks <<Frontend>>
+        rectangle "API Client\n(axios)" as APIClient <<Frontend>>
+    }
+}
+
+package "Backend (Flask + Gunicorn)" <<Backend>> {
+    rectangle "Flask App Factory\nCORS / Error Handlers" as FlaskApp <<Backend>>
+    
+    package "API Blueprints" <<Backend>> {
+        rectangle "/api/fleet\nGET /ev, /combustion, /stats" as FleetBP <<Backend>>
+        rectangle "/api/maintenance\nGET /alerts, /log" as MaintBP <<Backend>>
+        rectangle "/api/transport\nGET /routes, /incidents" as TransBP <<Backend>>
+        rectangle "/api/assets\nGET /, /<id>" as AssetBP <<Backend>>
+        rectangle "/api/tickets\nGET /, /<id>" as TicketBP <<Backend>>
+        rectangle "/api/compliance\nGET /departments" as ComplBP <<Backend>>
+        rectangle "/api/health" as Health <<Backend>>
+    }
+    
+    package "Services" <<Backend>> {
+        rectangle "Fleet Service\nCost Calculator" as FleetSvc <<Backend>>
+        rectangle "Maintenance Service\nCategorization" as MaintSvc <<Backend>>
+    }
+    
+    package "SQLAlchemy Models" <<Backend>> {
+        rectangle "Vehicle" as VehicleModel <<Backend>>
+        rectangle "MaintenanceRecord" as MaintModel <<Backend>>
+        rectangle "Asset" as AssetModel <<Backend>>
+        rectangle "Ticket / Comment" as TicketModel <<Backend>>
+        rectangle "Route" as RouteModel <<Backend>>
+        rectangle "Incident" as IncidentModel <<Backend>>
+        rectangle "ComplianceCheck" as ComplModel <<Backend>>
+    }
+    
+    package "Utils" <<Backend>> {
+        rectangle "Seed Data\n(validators, demo data)" as Seed <<Backend>>
+    }
+}
+
+package "Data Layer" <<Database>> {
+    database "PostgreSQL 15" as Postgres <<Database>> {
+        rectangle "vehicles" as T_Vehicles <<Database>>
+        rectangle "maintenance_records" as T_Maint <<Database>>
+        rectangle "assets" as T_Assets <<Database>>
+        rectangle "tickets / comments" as T_Tickets <<Database>>
+        rectangle "routes" as T_Routes <<Database>>
+        rectangle "incidents" as T_Incidents <<Database>>
+        rectangle "compliance_checks" as T_Compl <<Database>>
+    }
+}
+
+package "Infrastructure" <<External>> {
+    rectangle "Nginx Reverse Proxy\n(SPA fallback + /api proxy)" as Nginx <<External>>
+    rectangle "Docker / Docker Compose" as Docker <<External>>
+}
+
+' User interaction flow
+User --> Router : navigates
+Router --> Landing : "/"
+Router --> Dashboard : "/dashboard"
+Router --> EVPage : "/fleet/ev"
+Router --> CombPage : "/fleet/combustion"
+Router --> MaintAlerts : "/maintenance/alerts"
+Router --> ServiceLog : "/maintenance/log"
+Router --> RoutesPage : "/transport/routes"
+Router --> IncidentsPage : "/transport/incidents"
+Router --> AssetInv : "/assets/inventory"
+Router --> AssetDet : "/assets/detail"
+Router --> TicketList : "/helpdesk/tickets"
+Router --> TicketDet : "/helpdesk/ticket/:id"
+Router --> Compliance : "/compliance"
+
+' Layout wrapping
+Dashboard --> Layout : renders in shell
+EVPage --> Layout : renders in shell
+CombPage --> Layout : renders in shell
+MaintAlerts --> Layout : renders in shell
+ServiceLog --> Layout : renders in shell
+RoutesPage --> Layout : renders in shell
+IncidentsPage --> Layout : renders in shell
+AssetInv --> Layout : renders in shell
+AssetDet --> Layout : renders in shell
+TicketList --> Layout : renders in shell
+TicketDet --> Layout : renders in shell
+Compliance --> Layout : renders in shell
+
+' Component usage
+Dashboard --> Charts : cost, utilization,\ncomposition, tickets
+Dashboard --> Badge : severity badges
+EVPage --> DataTable : fleet register
+EVPage --> Badge : status badges
+CombPage --> DataTable : fleet register
+CombPage --> Badge : status badges
+MaintAlerts --> DataTable : alerts table
+MaintAlerts --> Charts : cost breakdown
+ServiceLog --> DataTable : service history
+RoutesPage --> DataTable : active routes
+RoutesPage --> Badge : route status
+IncidentsPage --> DataTable : incident reports
+IncidentsPage --> Badge : severity/status
+AssetInv --> DataTable : asset register
+AssetInv --> Badge : asset status
+TicketList --> DataTable : ticket list
+TicketList --> Badge : priority/status
+TicketDet --> Badge : status/priority
+Compliance --> DataTable : compliance matrix
+
+' Data flow
+EVPage --> Hooks : useFleetData("ev")
+CombPage --> Hooks : useFleetData("combustion")
+AssetInv --> Hooks : useAssets()
+TicketList --> Hooks : useTickets()
+MaintAlerts --> APIClient : direct fetch
+ServiceLog --> APIClient : direct fetch
+RoutesPage --> APIClient : direct fetch
+IncidentsPage --> APIClient : direct fetch
+Compliance --> APIClient : direct fetch
+TicketDet --> APIClient : direct fetch
+AssetDet --> APIClient : direct fetch
+
+Hooks --> APIClient : HTTP GET
+APIClient --> Nginx : /api/*
+Nginx --> FlaskApp : proxy_pass
+
+' Backend routing
+FlaskApp --> FleetBP : register_blueprint
+FlaskApp --> MaintBP : register_blueprint
+FlaskApp --> TransBP : register_blueprint
+FlaskApp --> AssetBP : register_blueprint
+FlaskApp --> TicketBP : register_blueprint
+FlaskApp --> ComplBP : register_blueprint
+
+' Service layer
+FleetBP --> FleetSvc : get_fleet_summary
+MaintBP --> MaintSvc : calculate_maintenance_costs
+
+' Model access
+FleetBP --> VehicleModel : query.filter_by
+MaintBP --> MaintModel : query.order_by
+MaintBP --> VehicleModel : query.filter (alerts)
+TransBP --> RouteModel : query.all
+TransBP --> IncidentModel : query.order_by
+AssetBP --> AssetModel : query.all / get_or_404
+TicketBP --> TicketModel : query.all / get_or_404
+ComplBP --> ComplModel : query.all
+
+' Database persistence
+VehicleModel --> T_Vehicles : SQLAlchemy ORM
+MaintModel --> T_Maint : SQLAlchemy ORM
+AssetModel --> T_Assets : SQLAlchemy ORM
+TicketModel --> T_Tickets : SQLAlchemy ORM
+RouteModel --> T_Routes : SQLAlchemy ORM
+IncidentModel --> T_Incidents : SQLAlchemy ORM
+ComplModel --> T_Compl : SQLAlchemy ORM
+
+' Seeding
+Seed --> VehicleModel : db.session.add
+Seed --> MaintModel : db.session.add
+Seed --> AssetModel : db.session.add
+Seed --> TicketModel : db.session.add
+Seed --> RouteModel : db.session.add
+Seed --> IncidentModel : db.session.add
+Seed --> ComplModel : db.session.add
+
+' Deployment
+Docker --> Nginx : serves static build
+Docker --> FlaskApp : backend:5000
+
+note right of Landing
+  **Read-Only Demo**
+  No auth required.
+  All data is seeded
+  sample data.
+end note
+
+note right of Nginx
+  **nginx.conf**
+  - Gzip compression
+  - Static asset caching
+  - /api/ → backend:5000
+  - SPA fallback to index.html
+end note
+
+note bottom of Postgres
+  **Tables seeded on startup:**
+  20 Vehicles, 8 Maintenance Records,
+  10 Assets, 8 Tickets, 8 Routes,
+  6 Compliance Depts, 6 Incidents
+end note
+
+@enduml
