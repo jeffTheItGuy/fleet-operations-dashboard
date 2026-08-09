@@ -14,35 +14,30 @@ COPY . .
 RUN npm run build
 
 # ═══════════════════════════════════════════════════════════
-#  Stage 2 — Serve with Nginx (hardened for read-only root)
+#  Stage 2 — Serve with Nginx (read-only root hardened)
 # ═══════════════════════════════════════════════════════════
 FROM nginx:alpine
 
 RUN apk add --no-cache curl
 
-# Fix 1: Move nginx PID away from /run (read-only) to /tmp (emptyDir mount).
-#        The regex catches /run/nginx.pid, /var/run/nginx.pid, etc.
-RUN sed -i 's|pid.*nginx.pid|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf
-
-# Fix 2: Remove default site so the entrypoint script doesn't try (and fail)
-#        to patch a read-only file on startup.
+# Remove the default site config
 RUN rm -f /etc/nginx/conf.d/default.conf
 
-# Fix 3: Ensure temp directories nginx needs are on writable paths.
+# Ensure temp directories are on the writable emptyDir mount (/tmp)
 RUN mkdir -p /tmp/nginx/client-body /tmp/nginx/proxy /tmp/nginx/fastcgi \
              /tmp/nginx/uwsgi /tmp/nginx/scgi && \
     chown -R nginx:nginx /tmp/nginx
 
+# Copy custom main nginx.conf (pid moved to /tmp) and site config
+COPY nginx.main.conf /etc/nginx/nginx.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Fix 4: Update nginx.conf to also use /tmp for client body temp.
-#        (Not strictly required for startup, but prevents runtime errors.)
-RUN sed -i 's|client_body_temp_path.*|client_body_temp_path /tmp/nginx/client-body;|' /etc/nginx/nginx.conf || true
-
+# Copy built static assets
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-# Bypass the entrypoint scripts entirely — they try to modify read-only files.
-# We run nginx directly with the daemon-off flag.
+# Bypass the entrypoint script entirely — it tries to modify
+# read-only files and generates noise. Start nginx directly.
+ENTRYPOINT []
 CMD ["nginx", "-g", "daemon off;"]
