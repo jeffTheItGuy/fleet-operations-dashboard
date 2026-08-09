@@ -1,32 +1,20 @@
-# syntax=docker/dockerfile:1
-
-# ═══════════════════════════════════════════════════════════
-#  Stage 1 — Build the React (Vite) application
-# ═══════════════════════════════════════════════════════════
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
-COPY . .
-RUN npm run build
-
 # ═══════════════════════════════════════════════════════════
 #  Stage 2 — Serve with Nginx
 # ═══════════════════════════════════════════════════════════
 FROM nginx:alpine
-
 RUN apk add --no-cache curl
 
-# Fix: nginx cannot write PID to /run because the container uses
-# readOnlyRootFilesystem. Move PID to /tmp (already an emptyDir mount).
-RUN sed -i 's|pid /run/nginx.pid|pid /tmp/nginx.pid|' /etc/nginx/nginx.conf
+# Fix 1: Robustly replace the PID path regardless of spacing or /var/run vs /run
+# This ensures Nginx writes its PID to /tmp (which is mounted as a writable emptyDir)
+RUN sed -i 's|/var/run/nginx.pid|/tmp/nginx.pid|g; s|/run/nginx.pid|/tmp/nginx.pid|g' /etc/nginx/nginx.conf
+
+# Fix 2: Symlink logs to stdout/stderr to prevent read-only filesystem crashes
+# Nginx will try to write to /var/log/nginx/ which is blocked by readOnlyRootFilesystem
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
 
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
