@@ -1,45 +1,38 @@
-# =============================================================================
-# CMED Frontend — Production Dockerfile
-# =============================================================================
-# Multi-stage build:
-#   Stage 1: Node 20 Alpine — build the React app with Vite
-#   Stage 2: Nginx Alpine — serve static files + proxy API to backend
-#
-# Result: Optimized, minified production bundle served by Nginx.
-# No Node runtime in final image — attack surface minimized.
-# =============================================================================
+# syntax=docker/dockerfile:1
 
-# ------------------------------ Stage 1: Build -------------------------------
+# ═══════════════════════════════════════════════════════════
+#  Stage 1 — Build the React (Vite) application
+# ═══════════════════════════════════════════════════════════
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies first (leverages Docker layer cache)
+# 1. Install dependencies
+#    - Use 'npm ci' when a lockfile is present (fast, reproducible).
+#    - Fall back to 'npm install' when it is missing.
+#    - Do NOT omit devDependencies: vite, @vitejs/plugin-react, etc.
+#      are required to run the build.
 COPY package*.json ./
-RUN npm ci --only=production
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# Copy source and build
+# 2. Copy source code and build static assets
 COPY . .
 RUN npm run build
 
-# ------------------------------ Stage 2: Serve -------------------------------
+# ═══════════════════════════════════════════════════════════
+#  Stage 2 — Serve with Nginx
+# ═══════════════════════════════════════════════════════════
 FROM nginx:alpine
 
-# Install curl for healthcheck
+# Install curl for health-check probes
 RUN apk add --no-cache curl
 
-# Remove default Nginx config
+# Replace default nginx site with your custom config
 RUN rm /etc/nginx/conf.d/default.conf
-
-# Copy custom Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built assets from builder stage
+# Pull in the compiled Vite output from the builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
 
 EXPOSE 80
 
