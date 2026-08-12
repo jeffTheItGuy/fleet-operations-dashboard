@@ -1,43 +1,27 @@
-# syntax=docker/dockerfile:1
-
-# ═══════════════════════════════════════════════════════════
-#  Stage 1 — Build the React (Vite) application
-# ═══════════════════════════════════════════════════════════
+# ── Build Stage ──
 FROM node:20-alpine AS builder
-
 WORKDIR /app
 
 COPY package*.json ./
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+RUN npm ci
 
 COPY . .
 RUN npm run build
 
-# ═══════════════════════════════════════════════════════════
-#  Stage 2 — Serve with Nginx (read-only root hardened)
-# ═══════════════════════════════════════════════════════════
-FROM nginx:alpine
-
-RUN apk add --no-cache curl
-
-# Remove the default site config
-RUN rm -f /etc/nginx/conf.d/default.conf
-
-# Ensure temp directories are on the writable emptyDir mount (/tmp)
-RUN mkdir -p /tmp/nginx/client-body /tmp/nginx/proxy /tmp/nginx/fastcgi \
-             /tmp/nginx/uwsgi /tmp/nginx/scgi && \
-    chown -R nginx:nginx /tmp/nginx
-
-# Copy custom main nginx.conf (pid moved to /tmp) and site config
-COPY nginx.main.conf /etc/nginx/nginx.conf
+# ── Production Stage ──
+FROM nginx:1.25-alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built static assets
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Security: run as non-root
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d && \
+    touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid
 
+USER nginx
 EXPOSE 80
-
-# Bypass the entrypoint script entirely — it tries to modify
-# read-only files and generates noise. Start nginx directly.
-ENTRYPOINT []
 CMD ["nginx", "-g", "daemon off;"]
