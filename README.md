@@ -1,6 +1,6 @@
-# Fleet & Operations Dashboard — Zimbabwe
+# Fleet & Operations Dashboard
 
-A full-stack operational dashboard designed for Zimbabwe-focused fleet management, urban transit, transport operations, ICT support, asset management, and compliance tracking.
+A full-stack operational dashboard designed for fleet management, urban transit, transport operations, ICT support, asset management, and compliance tracking.
 
 Built as a portfolio project to demonstrate end-to-end delivery using **React**, **Flask**, **PostgreSQL**, and **Docker**. The project was originally designed with the **CMED Private Limited Graduate Trainee ICT** context in mind, but is structured as a reusable demonstration of operational software for public-sector and transport environments.
 
@@ -11,7 +11,7 @@ Built as a portfolio project to demonstrate end-to-end delivery using **React**,
 - **Project type:** Portfolio / Demonstration project
 - **Deployment model:** Docker-first
 - **Primary focus:** Fleet, transport, ICT operations, asset management, and compliance
-- **Target environment:** Zimbabwean public-sector and transport operations
+- **Target environment:** Southern African public-sector and transport operations
 
 ---
 
@@ -27,9 +27,9 @@ The goal is to show how operational data from vehicles, maintenance activities, 
 
 ---
 
-## 2. Built for Zimbabwe
+## 2. Built for Southern Africa
 
-This project is designed with Zimbabwean operational realities in mind:
+This project is designed with Southern African operational realities in mind:
 
 - **Power and network interruptions** — Docker ensures the application stack can be moved between machines with minimal reconfiguration
 - **Limited hardware budgets** — The backend is lightweight and uses open-source technologies
@@ -122,7 +122,7 @@ The project aligns with common responsibilities in ICT support, fleet management
 
 ## Why Docker?
 
-In Zimbabwe’s operational environment, infrastructure may face hardware changes, network interruptions, and limited deployment time. Docker helps by packaging the database, backend, and frontend into a consistent environment.
+In Southern Africa’s operational environment, infrastructure may face hardware changes, network interruptions, and limited deployment time. Docker helps by packaging the database, backend, and frontend into a consistent environment.
 
 This reduces:
 
