@@ -70,7 +70,7 @@ function LandingPage() {
             any live systems. All vehicles, routes, tickets, assets, and
             compliance records shown inside are sample data. It was built to
             demonstrate end-to-end delivery of an operational dashboard for
-            fleet, transport, and ICT support environments in Zimbabwe.
+            fleet, transport, and ICT support environments in Southern Africa.
           </p>
 
           <h2 className="landing-list-heading">Purpose of this demo</h2>

@@ -14,7 +14,7 @@ const assetDetail = {
   status: 'active',
   location: 'Head Office, Harare',
   specs: 'Intel i7-1165G7, 16GB RAM, 512GB SSD, Windows 11 Pro',
-  supplier: 'Dell Zimbabwe',
+  supplier: 'Dell ',
   cost: 1850,
 }
 
